@@ -12,6 +12,8 @@ import leakcanary.GcTrigger
 import leakcanary.KeyedWeakReference
 import leakcanary.LeakCanary.Config
 import leakcanary.ObjectWatcher
+import leakcanary.RetainInstanceChange.CountChanged
+import leakcanary.RetainInstanceChange.Reset
 import leakcanary.internal.NotificationReceiver.Action.CANCEL_NOTIFICATION
 import leakcanary.internal.NotificationReceiver.Action.DUMP_HEAP
 import leakcanary.internal.NotificationType.LEAKCANARY_LOW
@@ -90,7 +92,7 @@ internal class HeapDumpTrigger(
       retainedReferenceCount = objectWatcher.retainedObjectCount
     }
 
-    config.onRetainInstanceListener.onCountChanged(retainedReferenceCount)
+    config.onRetainInstanceListener.onChange(CountChanged(retainedReferenceCount))
 
     if (checkRetainedCount(retainedReferenceCount, config.retainedVisibleThreshold)) return
 
@@ -115,7 +117,7 @@ internal class HeapDumpTrigger(
       return
     }
     lastDisplayedRetainedObjectCount = 0
-    config.onRetainInstanceListener.onReset()
+    config.onRetainInstanceListener.onChange(Reset)
     objectWatcher.clearObjectsWatchedBefore(heapDumpUptimeMillis)
 
     HeapAnalyzerService.runAnalysis(application, heapDumpFile)
