@@ -14,8 +14,8 @@ import leakcanary.internal.activity.db.HeapAnalysisTable
 import leakcanary.internal.activity.db.LeakTable
 import leakcanary.internal.activity.db.LeaksDbHelper
 import leakcanary.internal.activity.screen.HeapAnalysisFailureScreen
-import leakcanary.internal.activity.screen.HeapDumpsScreen
 import leakcanary.internal.activity.screen.HeapDumpScreen
+import leakcanary.internal.activity.screen.HeapDumpsScreen
 import leakcanary.internal.navigation.Screen
 import shark.HeapAnalysis
 import shark.HeapAnalysisFailure
@@ -66,6 +66,7 @@ class DefaultOnHeapAnalyzedListener(private val application: Application) : OnHe
 
     if (InternalLeakCanary.formFactor == TV) {
       showToast()
+      printIntentInfo()
     } else {
       showNotification(screenToShow, contentTitle)
     }
@@ -107,6 +108,23 @@ class DefaultOnHeapAnalyzedListener(private val application: Application) : OnHe
         // Toasts are prone to crashing, ignore
       }
     }
+  }
+
+  /**
+   * Android TV with API 26+ has a bug where launcher icon doesn't appear, so users won't know how
+   * to launch LeakCanary Activity.
+   * This method would print an adb command that launched LeakCanary into the logcat
+   */
+  private fun printIntentInfo() {
+    val leakClass = LeakActivity::class.java
+    val message = """====================================
+ANDROID TV LAUNCH INTENT
+====================================
+Use following adb command to open Leak Activity with results:
+
+adb shell am start -n "${application.packageName}/${leakClass.name.replace(leakClass.simpleName, "LeakLauncherActivity")}"
+//===================================="""
+    SharkLog.d { message }
   }
 
   companion object {
