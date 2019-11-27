@@ -40,7 +40,7 @@ internal object FragmentDestroyWatcher {
   ) {
     val fragmentDestroyWatchers = mutableListOf<(Activity) -> Unit>()
 
-    if (SDK_INT >= O) {
+    if (SDK_INT >= O) {//android o提供监控fragment 销毁监听
       fragmentDestroyWatchers.add(
           AndroidOFragmentDestroyWatcher(objectWatcher, configProvider)
       )
@@ -48,16 +48,16 @@ internal object FragmentDestroyWatcher {
 
     if (classAvailable(ANDROIDX_FRAGMENT_CLASS_NAME) &&
         classAvailable(ANDROIDX_FRAGMENT_DESTROY_WATCHER_CLASS_NAME)
-    ) {
+    ) {//检测是否使用androidx
       val watcherConstructor = Class.forName(ANDROIDX_FRAGMENT_DESTROY_WATCHER_CLASS_NAME)
-          .getDeclaredConstructor(ObjectWatcher::class.java, Function0::class.java)
+          .getDeclaredConstructor(ObjectWatcher::class.java, Function0::class.java)//获取构造方法
       @kotlin.Suppress("UNCHECKED_CAST")
       fragmentDestroyWatchers.add(
           watcherConstructor.newInstance(objectWatcher, configProvider) as (Activity) -> Unit
-      )
+      )//添加AndroidXFragmentDestroyWatcher
     }
 
-    if (fragmentDestroyWatchers.size == 0) {
+    if (fragmentDestroyWatchers.size == 0) {//对于androidX 及 O下的fragment 无法自动监控
       return
     }
 

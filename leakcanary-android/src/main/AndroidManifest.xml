@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (C) 2018 Square, Inc.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,10 +16,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.squareup.leakcanary">
 
-  <application>
-    <service
-        android:name="leakcanary.internal.HeapAnalyzerService"
-        android:exported="false" />
-  </application>
+    <application>
+        <!--注册HeapAnalyzerService（前台通知），来自core
+         限制其他应用启动-->
+        <service
+            android:name="leakcanary.internal.HeapAnalyzerService"
+            android:exported="false" />
+    </application>
 
 </manifest>

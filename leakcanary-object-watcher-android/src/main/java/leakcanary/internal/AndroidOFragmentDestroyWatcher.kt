@@ -36,7 +36,7 @@ internal class AndroidOFragmentDestroyWatcher(
       fragment: Fragment
     ) {
       val view = fragment.view
-      if (view != null && configProvider().watchFragmentViews) {
+      if (view != null && configProvider().watchFragmentViews) {//监听fragmentView
         objectWatcher.watch(view)
       }
     }
@@ -45,7 +45,7 @@ internal class AndroidOFragmentDestroyWatcher(
       fm: FragmentManager,
       fragment: Fragment
     ) {
-      if (configProvider().watchFragments) {
+      if (configProvider().watchFragments) {//监听fragment
         objectWatcher.watch(fragment)
       }
     }

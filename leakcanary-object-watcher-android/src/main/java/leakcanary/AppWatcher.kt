@@ -64,7 +64,7 @@ object AppWatcher {
     set(newConfig) {
       val previousConfig = field
       field = newConfig
-      logConfigChange(previousConfig, newConfig)
+      logConfigChange(previousConfig, newConfig)//记录变化
     }
 
   private fun logConfigChange(
@@ -81,7 +81,7 @@ object AppWatcher {
           changedFields += "${field.name}=$newValue"
         }
       }
-      "Updated AppWatcher.config: Config(${if (changedFields.isNotEmpty())
+     return@d "Updated AppWatcher.config: Config(${if (changedFields.isNotEmpty())
         changedFields.joinToString(", ") else "no changes"})"
     }
   }

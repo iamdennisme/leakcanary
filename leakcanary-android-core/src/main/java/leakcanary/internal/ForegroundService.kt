@@ -52,6 +52,7 @@ internal abstract class ForegroundService(
   }
 
   override fun onHandleIntent(intent: Intent?) {
+    //关键方法
     onHandleIntentInForeground(intent)
   }
 

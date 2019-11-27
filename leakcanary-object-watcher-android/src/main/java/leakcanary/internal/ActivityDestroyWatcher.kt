@@ -27,9 +27,9 @@ internal class ActivityDestroyWatcher private constructor(
 ) {
 
   private val lifecycleCallbacks =
-    object : Application.ActivityLifecycleCallbacks by noOpDelegate() {
+    object : Application.ActivityLifecycleCallbacks by noOpDelegate() {//委托协议 动态代理注册onDestory
       override fun onActivityDestroyed(activity: Activity) {
-        if (configProvider().watchActivities) {
+        if (configProvider().watchActivities) {//判断activity，则监听activity
           objectWatcher.watch(activity)
         }
       }
@@ -42,8 +42,8 @@ internal class ActivityDestroyWatcher private constructor(
       configProvider: () -> Config
     ) {
       val activityDestroyWatcher =
-        ActivityDestroyWatcher(objectWatcher, configProvider)
-      application.registerActivityLifecycleCallbacks(activityDestroyWatcher.lifecycleCallbacks)
+        ActivityDestroyWatcher(objectWatcher, configProvider)//创建activity监听
+      application.registerActivityLifecycleCallbacks(activityDestroyWatcher.lifecycleCallbacks)//注册生命周期
     }
   }
 }

@@ -51,23 +51,23 @@ internal object InternalAppWatcher {
     mainHandler.postDelayed(it, AppWatcher.config.watchDurationMillis)
   }
   val objectWatcher = ObjectWatcher(
-      clock = clock,
+      clock = clock,//时间
       checkRetainedExecutor = checkRetainedExecutor,
-      isEnabled = { AppWatcher.config.enabled }
+      isEnabled = { AppWatcher.config.enabled }//根据配置是否监听
   )
 
   fun install(application: Application) {
-    SharkLog.logger = DefaultCanaryLog()
+    SharkLog.logger = DefaultCanaryLog()//初始化日志工具
     SharkLog.d { "Installing AppWatcher" }
     checkMainThread()
-    if (this::application.isInitialized) {
+    if (this::application.isInitialized) {//已经初始化过
       return
     }
     InternalAppWatcher.application = application
 
-    val configProvider = { AppWatcher.config }
-    ActivityDestroyWatcher.install(application, objectWatcher, configProvider)
-    FragmentDestroyWatcher.install(application, objectWatcher, configProvider)
+    val configProvider = { AppWatcher.config }//获取config。//根据是否初始化判断是否监听
+    ActivityDestroyWatcher.install(application, objectWatcher, configProvider)//注册Activity
+    FragmentDestroyWatcher.install(application, objectWatcher, configProvider)//注册fragment
     onAppWatcherInstalled(application)
   }
 

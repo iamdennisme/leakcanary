@@ -25,14 +25,14 @@ internal sealed class AppWatcherInstaller : ContentProvider() {
   internal class LeakCanaryProcess : AppWatcherInstaller() {
     override fun onCreate(): Boolean {
       super.onCreate()
-      AppWatcher.config = AppWatcher.config.copy(enabled = false)
+      AppWatcher.config = AppWatcher.config.copy(enabled = false)//progress 设置为false，AppWatcher不监视对象
       return true
     }
   }
 
   override fun onCreate(): Boolean {
     val application = context!!.applicationContext as Application
-    InternalAppWatcher.install(application)
+    InternalAppWatcher.install(application)//初始化逻辑
     return true
   }
 
