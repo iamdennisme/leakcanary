@@ -35,7 +35,7 @@ internal object InternalAppWatcher {
 
   private val mainHandler = Handler(Looper.getMainLooper())
 
-  init {
+  init {//反射创建InternalLeakCanary
     val internalLeakCanary = try {
       val leakCanaryListener = Class.forName("leakcanary.internal.InternalLeakCanary")
       leakCanaryListener.getDeclaredField("INSTANCE")
@@ -68,7 +68,7 @@ internal object InternalAppWatcher {
     val configProvider = { AppWatcher.config }//获取config。//根据是否初始化判断是否监听
     ActivityDestroyWatcher.install(application, objectWatcher, configProvider)//注册Activity
     FragmentDestroyWatcher.install(application, objectWatcher, configProvider)//注册fragment
-    onAppWatcherInstalled(application)
+    onAppWatcherInstalled(application)//调用InternalLeakCanary.invoke()
   }
 
   inline fun <reified T : Any> noOpDelegate(): T {

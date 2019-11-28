@@ -8,7 +8,7 @@ interface OnObjectRetainedListener {
   /**
    * A watched object became retained.
    */
-  fun onObjectRetained()
+  fun onObjectRetained()//内存泄漏回调
 
   companion object {
     /**

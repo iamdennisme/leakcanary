@@ -72,7 +72,7 @@ data class HeapAnalysisSuccess(
   /**
    * The list of [ApplicationLeak] found in the heap dump by [HeapAnalyzer].
    */
-  val applicationLeaks: List<ApplicationLeak>,
+  val applicationLeaks: List<ApplicationLeak>,//内存泄漏信息
   /**
    * The list of [LibraryLeak] found in the heap dump by [HeapAnalyzer].
    */

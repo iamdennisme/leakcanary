@@ -20,10 +20,10 @@ import shark.SharkLog
 @Suppress("TooManyFunctions")
 internal class HeapDumpTrigger(
   private val application: Application,
-  private val backgroundHandler: Handler,
-  private val objectWatcher: ObjectWatcher,
-  private val gcTrigger: GcTrigger,
-  private val heapDumper: HeapDumper,
+  private val backgroundHandler: Handler,//LEAK_CANARY_THREAD_NAME线程
+  private val objectWatcher: ObjectWatcher,//watcher，实际由 InternalAppWatcher.objectWatcher获取
+  private val gcTrigger: GcTrigger,//处理gc的一些逻辑
+  private val heapDumper: HeapDumper,//AndroidHeapDumper
   private val configProvider: () -> Config
 ) {
 
@@ -83,15 +83,18 @@ internal class HeapDumpTrigger(
     }
     SharkLog.d { "Checking retained object because $reason" }
 
+    //获取在 ObjectWatcher 中计算出来的内存泄露实例个数
     var retainedReferenceCount = objectWatcher.retainedObjectCount
-
+    //大于0,再执行一次GC，再计算一次
     if (retainedReferenceCount > 0) {
       gcTrigger.runGc()
       retainedReferenceCount = objectWatcher.retainedObjectCount
     }
 
+    //判断泄漏数，少于5个不做heap dump
     if (checkRetainedCount(retainedReferenceCount, config.retainedVisibleThreshold)) return
 
+    //在debug时不做heap dump
     if (!config.dumpHeapWhenDebugging && DebuggerControl.isDebuggerAttached) {
       showRetainedCountWithDebuggerAttached(retainedReferenceCount)
       scheduleRetainedObjectCheck("debugger was attached", WAIT_FOR_DEBUG_MILLIS)
@@ -105,16 +108,18 @@ internal class HeapDumpTrigger(
     val heapDumpUptimeMillis = SystemClock.uptimeMillis()
     KeyedWeakReference.heapDumpUptimeMillis = heapDumpUptimeMillis
     dismissRetainedCountNotification()
-    val heapDumpFile = heapDumper.dumpHeap()
-    if (heapDumpFile == null) {
+    val heapDumpFile = heapDumper.dumpHeap()//AndroidHeapDumper的实现，返回heapDumpFile
+    if (heapDumpFile == null) {//获取为空 重试
       SharkLog.d { "Failed to dump heap, will retry in $WAIT_AFTER_DUMP_FAILED_MILLIS ms" }
       scheduleRetainedObjectCheck("failed to dump heap", WAIT_AFTER_DUMP_FAILED_MILLIS)
       showRetainedCountWithHeapDumpFailed(retainedReferenceCount)
       return
     }
     lastDisplayedRetainedObjectCount = 0
+    //移除掉已经 heap dump 的 retainedKeys
     objectWatcher.clearObjectsWatchedBefore(heapDumpUptimeMillis)
 
+    //分析得到heap dump 文件
     HeapAnalyzerService.runAnalysis(application, heapDumpFile)
   }
 
@@ -195,7 +200,7 @@ internal class HeapDumpTrigger(
     return false
   }
 
-  private fun scheduleRetainedObjectCheck(reason: String) {
+  private fun scheduleRetainedObjectCheck(reason: String) {//最后检查是否内存泄漏
     if (checkScheduled) {
       SharkLog.d { "Already scheduled retained check, ignoring ($reason)" }
       return

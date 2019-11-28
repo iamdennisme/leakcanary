@@ -26,11 +26,11 @@ class DefaultOnHeapAnalyzedListener(private val application: Application) : OnHe
   override fun onHeapAnalyzed(heapAnalysis: HeapAnalysis) {
     SharkLog.d { "$heapAnalysis" }
 
-    val (id, groupProjections) = LeaksDbHelper(application)
+    val (id, groupProjections) = LeaksDbHelper(application)//解构
         .writableDatabase.use { db ->
       val id = HeapAnalysisTable.insert(db, heapAnalysis)
-      id to LeakTable.retrieveHeapDumpLeaks(db, id)
-    }
+      id to LeakTable.retrieveHeapDumpLeaks(db, id) //Map<String, HeapAnalysisGroupProjection>
+    }//持久化
 
     val (contentTitle, screenToShow) = when (heapAnalysis) {
       is HeapAnalysisFailure -> application.getString(
@@ -56,7 +56,7 @@ class DefaultOnHeapAnalyzedListener(private val application: Application) : OnHe
             knownLeakCount, libraryLeakCount
         ) to HeapDumpScreen(id)
       }
-    }
+    }//生成notify contentTitle, screenToShow
 
     val pendingIntent = LeakActivity.createPendingIntent(
         application, arrayListOf(HeapDumpsScreen(), screenToShow)

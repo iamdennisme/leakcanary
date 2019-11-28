@@ -85,7 +85,7 @@ internal class AndroidHeapDumper(
     val toast = waitingForToast.get()
 
     return try {
-      Debug.dumpHprofData(heapDumpFile.absolutePath)
+      Debug.dumpHprofData(heapDumpFile.absolutePath) //写入 dumpHprofData
       if (heapDumpFile.length() == 0L) {
         SharkLog.d { "Dumped heap file is 0 byte length" }
         null

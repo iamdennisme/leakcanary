@@ -30,7 +30,7 @@ import java.io.File
 /**
  * This service runs in a main app process.
  */
-internal class HeapAnalyzerService : ForegroundService(
+internal class HeapAnalyzerService : ForegroundService( //在leakcanary-android中注册
     HeapAnalyzerService::class.java.simpleName,
     R.string.leak_canary_notification_analysing,
     R.id.leak_canary_notification_analyzing_heap
@@ -44,9 +44,9 @@ internal class HeapAnalyzerService : ForegroundService(
 
     // Since we're running in the main process we should be careful not to impact it.
     Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND)
-    val heapDumpFile = intent.getSerializableExtra(HEAPDUMP_FILE_EXTRA) as File
+    val heapDumpFile = intent.getSerializableExtra(HEAPDUMP_FILE_EXTRA) as File//获取到拿到的heapDumpFile路径
 
-    if (!heapDumpFile.exists()) {
+    if (!heapDumpFile.exists()) {//不存在抛异常
       throw IllegalStateException(
           "Hprof file missing due to: [${LeakDirectoryProvider.hprofDeleteReason(
               heapDumpFile
@@ -91,7 +91,7 @@ internal class HeapAnalyzerService : ForegroundService(
     ) {
       val intent = Intent(context, HeapAnalyzerService::class.java)
       intent.putExtra(HEAPDUMP_FILE_EXTRA, heapDumpFile)
-      startForegroundService(context, intent)
+      startForegroundService(context, intent)//静态方法启动自己
     }
 
     private fun startForegroundService(

@@ -67,10 +67,10 @@ internal class LeakDirectoryProvider constructor(
   }
 
   fun newHeapDumpFile(): File? {
-    cleanupOldHeapDumps()
+    cleanupOldHeapDumps()//清除原有数据
 
     var storageDirectory = externalStorageDirectory()
-    if (!directoryWritableAfterMkdirs(storageDirectory)) {
+    if (!directoryWritableAfterMkdirs(storageDirectory)) {//无法写入
       if (!hasStoragePermission()) {
         if (requestExternalStoragePermission()) {
           SharkLog.d { "WRITE_EXTERNAL_STORAGE permission not granted, requesting" }

@@ -125,13 +125,13 @@ class ObjectWatcher constructor(
     watchedObject: Any,
     name: String
   ) {
-    if (!isEnabled()) {
+    if (!isEnabled()) {//判断是否监控
       return
     }
     removeWeaklyReachableObjects()
     val key = UUID.randomUUID()
         .toString()
-    val watchUptimeMillis = clock.uptimeMillis()
+    val watchUptimeMillis = clock.uptimeMillis()//获取当前时间
     val reference =
       KeyedWeakReference(watchedObject, key, name, watchUptimeMillis, queue)
     SharkLog.d {
